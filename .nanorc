@@ -1,0 +1,10 @@
+set casesensitive
+set historylog
+set tabstospaces
+set tabsize 5
+
+
+set morespace
+set smooth
+
+
