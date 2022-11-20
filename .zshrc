@@ -10,6 +10,12 @@ setopt notify              # report the status of background jobs immediately
 setopt numericglobsort     # sort filenames numerically when it makes sense
 setopt promptsubst         # enable command substitution in prompt
 
+autoload -Uz vcs_info
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+setopt prompt_subst
+
+
 WORDCHARS=${WORDCHARS//\/} # Don't consider certain characters part of the word
 
 # hide EOL sign ('%')
@@ -121,7 +127,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)──}$(venv_info)(%B%F{%(#.red.blue)}%n%(#.💀.㉿)%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
+	PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)──}$(venv_info)(%B%F{%(#.red.blue)}%n%(#.💀.㉿)%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]-[%F{red}${vcs_info_msg_0_}%f%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
     RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})%(1j. %j %F{yellow}%B⚙%b%F{reset}.)'
 
     # enable syntax-highlighting
@@ -207,11 +213,12 @@ if [ -x /usr/bin/dircolors ]; then
     #alias vdir='vdir --color=auto'
     alias nano="nano -x"
     alias nautilus="nautilus ."
-    alias meld="meld ."
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
     alias diff='diff --color=auto'
+    alias meld='meld .'
+    alias gitg='gitg .'
     alias ip='ip --color=auto'
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
@@ -226,10 +233,6 @@ if [ -x /usr/bin/dircolors ]; then
     zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 fi
 
-# some more ls aliases
-alias ll='ls -l'
-alias la='ls -A'
-alias l='ls -CF'
 
 # enable auto-suggestions based on the history
 if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
@@ -242,19 +245,106 @@ fi
 if [ -f /etc/zsh_command_not_found ]; then
     . /etc/zsh_command_not_found
 fi
+#export PYTHONPATH="${PYTHONPATH}:${HOME}/.local/bin"
 
 alias up='sudo service apache2 start'
 alias down='sudo service apache2 stop'
-alias server='sudo service apache2 stop && sudo python -m SimpleHTTPServer 80'
 alias build='npm run build'
 alias ipconfig='ip address show'
-alias jidelna="python3 ~/Anonymous/jidelna.py"
+alias cat='bat -P'
+alias v='vim'
+#alias ls='colorls'
 
-#alias swohzshrc='cat ~/Dokumenty/ohmyzshrc > ~/.zshrc && '
-#alias swzshrc='cat ~/Dokumenty/zshrc > ~/.zshrc'
-#alias ohzshrc='source ~/Dokumenty/ohmyzshrc'
-#alias zshrc='source ~/Dokumenty/zshrc'
+alias dirscan="ffuf -c -w /usr/share/wordlists/directory-list-2.3-medium.txt -u"
+alias vhostscan="gobuster vhost -w /usr/share/wordlists/amass/subdomains-top1mil-5000.txt -u"
+alias portscan="nmap -p- --min-rate 5000 -sV"
 
-#cat /home/kali/.cache/wal/sequences
+#(wal -r &)
+alias eclipse="GTK_THEME=Adwaita ( cd Plocha/eclipse && ./eclipse )"
 
-screenfetch
+export dirsmall='/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt'
+export dirmed='/usr/share/wordlists/directory-list-2.3-medium.txt'
+export rockyou='/usr/share/wordlists/rockyou.txt'
+
+alias me='echo $(ifconfig tun0 | grep "inet " | cut -b 9- | cut  -d" " -f2)'
+alias e4l="enum4linux -a"
+alias h2t="html2text -style pretty"
+alias oso=onesixtyone
+alias cme=crackmapexec
+alias dockerrmAll='sudo docker rm $(sudo docker ps -a -q)'
+
+# some more ls aliases
+#alias ll='ls -l'
+#alias la='ls -A'
+#alias l='ls -CF'
+
+# with icons
+#alias ls='exa --icons --color=always --group-directories-first'
+#alias ll='exa -alF --icons --color=always --group-directories-first'
+#alias la='exa -a --icons --color=always --group-directories-first'
+#alias l='exa -F --icons --color=always --group-directories-first'
+#alias l.='exa -a | egrep "^\."'
+
+# without icons
+alias ls='exa --color=always --group-directories-first'
+alias ll='exa -alF --color=always --group-directories-first'
+alias la='exa -a --color=always --group-directories-first'
+alias l='exa -F --color=always --group-directories-first'
+alias l.='exa -a | egrep "^\."'
+
+# python server
+server() {
+    PORT=${1:-80}
+    DIR=${2:-$(pwd)}
+    echo "Serving files from $DIR"
+    if type python3 >/dev/null 2>&1; then
+       python3 -m http.server "$PORT"
+    else
+       python -m SimpleHTTPServer "$PORT"
+    fi
+}
+
+# move to/create workspace
+mtw() {
+	NAME=${1:-$(date +%Y%m%d-%T)}
+	SCAN_DIRECTORY=$HOME/workspace/$NAME
+	mkdir -p "$SCAN_DIRECTORY"
+	cd $SCAN_DIRECTORY
+	echo "$SCAN_DIRECTORY"
+}
+
+quickGit() {
+  git add .
+  git commit -m "$1"
+  git push
+}
+
+comrun() {
+   NAME=exploit-$(date '+%Y-%m-%d')
+   gcc $1 -o $NAME
+   ./$NAME
+}
+
+# dockerized metasploit
+metasploit() {
+    docker run --rm -it -v "${HOME}/.msf4:/home/msf/.msf4" metasploitframework/metasploit-framework ./msfconsole "$@"
+}
+
+metasploitports() {
+    docker run --rm -it -v "${HOME}/.msf4:/home/msf/.msf4" -p 8443-8500:8443-8500 metasploitframework/metasploit-framework ./msfconsole "$@"
+}
+
+alias dockershell="docker run --rm -i -t --entrypoint=/bin/bash"
+alias dockershellsh="docker run --rm -i -t --entrypoint=/bin/sh"
+
+#screenfetch
+
+# plugins
+source ~/Dokumenty/zshPlugins/k/k.plugin.zsh
+source ~/Dokumenty/zshPlugins/zsh-elapsed-time.plugin.zsh
+source ~/Dokumenty/zshPlugins/git-flow-completion/git-flow-completion.plugin.zsh
+# note: you can find these plugins on github
+
+# RPROMPT='${vcs_info_msg_0_}'
+# PROMPT='${vcs_info_msg_0_}%# '
+zstyle ':vcs_info:git:*' formats '%b'
