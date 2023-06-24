@@ -88,3 +88,17 @@ if [[ $dockerInstall = [Yy]* ]]; then
    sudo apt update
    sudo apt install docker-ce docker-ce-cli containerd.io
 fi
+
+while true; do
+   read -p "Install nodejs? [Y/N] `echo $'\n> '` " nodeInstall
+      case $nodeInstall in
+         [Yy]* ) break;;
+         [Nn]* ) break;;
+         * ) echo "Please answer yes or no. \n ";;
+   esac
+done
+
+if [[ $nodeInstall = [Yy]* ]]; then
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+   zsh -c "nvm install node"
+fi
