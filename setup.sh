@@ -7,8 +7,10 @@ sudo ln -s /usr/bin/batcat /usr/bin/bat
 rm -rf .git
 
 # Zsh Plugins
-git clone https://github.com/bobthecow/git-flow-completion.git zshPlugins
-git clone https://github.com/supercrabtree/k.git zshPlugins
+cd zshPlugins
+git clone https://github.com/bobthecow/git-flow-completion.git
+git clone https://github.com/supercrabtree/k.git
+cd ..
 
 if [ -d "~/Documents" ]
 then
