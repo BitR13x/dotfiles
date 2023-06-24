@@ -26,14 +26,18 @@ sleep 0.1
 sudo gunzip /usr/share/wordlists/rockyou.txt.gz
 sudo mv /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt /usr/share/wordlists/directory-list-2.3-medium.txt
 
-echo "Installing [git meld gitg zaproxy ltrace armitage gobuster stegcracker steghide hexedit binwalk html2text sshfs gau gedit] with apt[*]:"
+echo "Installing [git meld gitg zaproxy ltrace armitage gobuster stegcracker steghide hexedit binwalk html2text sshfs gau go gedit] with apt[*]:"
 sleep 0.1
 sudo apt install git -y
 sudo apt install meld -y
 sudo apt install gitg -y
+sudo apt install golang-go -y
 
 sudo apt install zaproxy ltrace armitage gedit \
- gobuster stegcracker steghide hexedit binwalk html2text sshfs gau -y
+ gobuster stegcracker steghide hexedit binwalk html2text sshfs -y
+
+
+go install github.com/lc/gau/v2/cmd/gau@latest
 
 pip3 install stegoveritas
 pip3 install spotify-dl
