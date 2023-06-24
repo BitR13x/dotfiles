@@ -4,11 +4,13 @@
 sudo apt install git exa bat -y
 sudo ln -s /usr/bin/batcat /usr/bin/bat
 
+rm -rf .git
+
 # Zsh Plugins
 git clone https://github.com/bobthecow/git-flow-completion.git zshPlugins
 git clone https://github.com/supercrabtree/k.git zshPlugins
 
-if [ -d "~/Documents" ] 
+if [ -d "~/Documents" ]
 then
     mv zshPlugins ~/Documents
     ln -s ~/Documents ~/Dokumenty
@@ -17,7 +19,7 @@ else
 fi
 
 # .config folder
-if [ -d "~/Documents" ]
+if [ -d "~/.config" ]
 then
     mv .config/* ~/.config
 else
