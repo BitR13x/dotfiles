@@ -37,3 +37,7 @@ cp ~/.gvimrc ~/.gvimrc.bak
 
 # dotfiles
 mv .* ~/
+
+# vim plugins
+vim +'PlugInstall coc.nvim ctrlp.vim gruvbox lightline.vim nerdtree nerdtree-git-plugin undotree vim-devicons vim-expand-region vim-gitgutter vim-nerdtree-syntax-highlight vim-rtags vim-termtoggle yats.vim' +qa
+
