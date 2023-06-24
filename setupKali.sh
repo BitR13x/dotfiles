@@ -70,3 +70,20 @@ chmod +x ~/Apps/Obsidian-1.3.5.AppImage
 # Pomotroid
 # wget https://github.com/Splode/pomotroid/releases/download/v0.13.0/pomotroid-0.13.0-linux.AppImage -P ~/Apps
 # alias pomotroid="~/Apps/pomotroid-0.13.0-linux.AppImage --disable-gpu-sandbox"
+while true; do
+   read -p "Install docker? [Y/N] `echo $'\n> '` " dockerInstall
+      case $dockerInstall in
+         [Yy]* ) break;;
+         [Nn]* ) break;;
+         * ) echo "Please answer yes or no. \n ";;
+   esac
+done
+
+
+if [[ $dockerInstall = [Yy]* ]]; then
+   sudo apt install curl gnupg2 apt-transport-https software-properties-common ca-certificates
+   #[ -f /var/run/reboot-required ] && sudo reboot -f
+   curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/docker-archive-keyring.gpg
+   echo "deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable" | sudo tee  /etc/apt/sources.list.d/docker.list
+   sudo apt install docker-ce docker-ce-cli containerd.io
+fi
